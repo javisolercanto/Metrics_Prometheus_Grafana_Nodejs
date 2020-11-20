@@ -11,7 +11,7 @@ Prometheus implementa un gran modelo dimensional de datos que nos permite realiz
 
 En resumen, nos permite monitorizar y trabajar sobre los resultados de una forma muy potente, fácil y sobretodo con fácil implementación con otros sistemas que puedan trabajar sobre éstos datos.
 
-![Logo de Prometheus](./images/prometheus/prometheus-logo.png = 400x400)
+![Logo de Prometheus](./images/prometheus/prometheus-logo.png)
 
 ### Grafana
 
