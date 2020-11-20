@@ -11,7 +11,7 @@ Prometheus implementa un gran modelo dimensional de datos que nos permite realiz
 
 En resumen, nos permite monitorizar y trabajar sobre los resultados de una forma muy potente, fácil y sobretodo con fácil implementación con otros sistemas que puedan trabajar sobre éstos datos.
 
-![Logo de Prometheus](./images/prometheus/prometheus-logo.png = 200x200)
+![Logo de Prometheus](./images/prometheus/prometheus-logo.png = 400x400)
 
 ### Grafana
 
@@ -19,7 +19,7 @@ En resumen, nos permite monitorizar y trabajar sobre los resultados de una forma
 
 En resumen, nos permite visualizar los datos nutriendose de servicios como <strong>Prometheus</strong> y así de una forma muy sencilla encontrar puntos débiles en nuestros endpoints o tener mejor controlado el tráfico de nuestra página web para poder mejorarlo.
 
-![Logo de Grafana](./images/grafana/grafana-logo.png = 200x200)
+![Logo de Grafana](./images/grafana/grafana-logo.png)
 
 Práctica
 ===
