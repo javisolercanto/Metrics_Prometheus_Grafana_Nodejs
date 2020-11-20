@@ -34,7 +34,19 @@ Primero debemos crear el Dockerfile para generar la imagen sobre la que partirá
 
 Una vez tenemos definido el Dockerfile, debemos crear el archivo `docker-compose.yaml` sobre el que se levantarán todos nuestros contenedores:
 
-![docker-compose.yaml](./images/aplicacion/aplicacion-dockercompose.png)
+```
+version: "2"
+networks:
+  network_practica:
+services:
+  app:
+    build: .
+    container_name: myapp_practica
+    ports:
+      - "83:3000"
+    networks:
+      - "network_practica"
+```
 
 Como podemos observar en la imagen hemos creado una <cite>network</cite> para poder conectar todos nuestros servicios entre sí. Hemos definido nuestro servicio <strong>`app`</strong> donde en el párametro <strong>`build`</strong> le definimos sobre que Dockerfile se debe basar para crear el contenedor. En este caso le decimos que esta en su mismo contexto, para ello, pondremos un <strong>`.`</strong> ; le daremos un nombre al contendor y enlazaremos el puerto 3000 del contenedor con nuestro puerto <stron>`82`</strong> local, y por último le decimos a que network pertenece.
 
@@ -58,7 +70,26 @@ Prometheus es una aplicación que nos permite recoger métricas de una aplicaci�
 
 Este servicio no necesita de Dockerfile ya que parte de una imagen ya creada en <cite>docker hub</cite>. Para crearlo lo haremos desde el fichero de `docker-compose.yaml`:
 
-![docker-compose.yaml](./images/prometheus/prometheus-dockercompose.png)
+```
+version: "2"
+networks:
+  network_practica:
+volumes:
+  prometheus.yml:
+services:
+  prometheus: 
+    image: prom/prometheus:v2.20.1
+    container_name: prometheus_practica
+    depends_on:
+      - app
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    networks:
+      - "network_practica"
+```
 
 Podemos observar que hemos declarado un nuevo volumen ya que necesitaremos de éste para poder transferir el fichero `prometheus.yml` dentro del contenedor, éste fichero contiene la configuración necesaria para poder conectarlo con nuestro servidor. Se basa en una imagen de prometheus y también le hemos dado un nombre identificativo. En este caso <strong>Prometheus</strong> se nutre de nuestro servidor por ello debemos declarar la opción <strong>`depends_on`</strong> donde le especificamos que depende de nuestro servicio <strong>`app`</strong>. Debemos incluirlo en la misma <strong>`network`</strong> que el servicio de app y en este caso mostrar enlazar los <strong>`ports`</strong> `9090` tanto en local como en en el contenedor. Por último especificamos la opción <strong>`command`</strong> que nos permite ejecutar un comando en el contenedor, en este caso el comando permite aplicar la configuración del fichero:
 ```
@@ -72,7 +103,7 @@ docker-compose up
 
 Ahora si accedemos a nuestro <strong>`localhost:9090`</strong> podemos observar que funciona correctamente y que además en el apartado <cite>targets</cite> está enlazado con nuestro servidor
 
-![docker-compose.yaml](./images/prometheus/prometheus-result.png)
+![prometheus-result](./images/prometheus/prometheus-result.png)
 
 ## Grafana
 
@@ -80,7 +111,33 @@ Este servicio será el encargado de graficar todas las métricas creadas por el 
 
 Como el anterior servicio, éste tampoco necestia de Dockerfile ya que dispone de una imagen propia, entonces lo haremos desde el `docker-compose.yaml`
 
-![docker-compose.yaml](./images/grafana/grafana-dockercompose.png)
+```
+
+version: "2"
+networks:
+  network_practica:
+volumes:
+  myGrafanaVol:
+  datasources.yml:
+services:
+  grafana:
+    image:  grafana/grafana:7.1.5
+    container_name: grafana_practica
+    depends_on:
+      - prometheus
+    volumes:
+      - myGrafanaVol:/var/lib/grafana
+      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    environment:
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel 1.0.1
+    ports:
+      - "3500:3000"
+    networks:
+      - "network_practica"
+```
 
 Parte desde una imagen propia y hemos declarado dos nuevos volúmenes para poder guardar la información de grafana (`myGrafanaVol`) y para poder transferir el fichero `datasources.yml` donde se encuentra la configuración para poder conectarse con <strong>Prometheus</strong> y recopilar esas métricas. En este caso el <strong>`depends_on`</strong> hará referencia a <strong>`prometheus`</strong> porque es de quien se nutre. En este contenedor debemos enlazar los <strong>`ports`</strong> `3500 local` con el `3000 del contenedor` para poder acceder. Por supuesto para que puedan verse todos los contenedores debe estar en la misma <strong>`network`</strong> Las variables de entorno son muy importantes ya que nos permitirán:
 ```
