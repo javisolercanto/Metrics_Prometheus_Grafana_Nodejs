@@ -106,7 +106,7 @@ docker-compose up
 ```
 Ahora si accedemos a <strong>`localhost:3500`</strong> accederemos a <strong>Grafana</strong>.
 
-![grafana home](./images/grafana/gafana-home.png)
+![grafana home](./images/grafana/grafana-home.png)
 
 Una vez dentro de <strong>Grafana</strong> podemos acceder a la barra lateral izquierda y crear un nuevo <strong>Dashboard</strong>, en él podemos crear los <strong>Panels</strong> donde se mostrarán los datos y  residirá la lógica.
 
